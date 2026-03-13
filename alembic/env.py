@@ -9,10 +9,10 @@ from src.core.config import settings
 from src.core.database import Base
 
 # Import all models so Base.metadata is populated
-import src.models.user  # noqa: F401
-import src.models.project  # noqa: F401
-import src.models.project_member  # noqa: F401
-import src.models.task  # noqa: F401
+# import src.models.user  # noqa: F401
+# import src.models.project  # noqa: F401
+# import src.models.project_member  # noqa: F401
+# import src.models.task  # noqa: F401
 
 config = context.config
 
