@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from uuid import uuid4
+from uuid import UUID as PyUUID, uuid4
 
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -11,10 +11,10 @@ from src.core.database import Base
 class ProjectMemberModel(Base):
     __tablename__ = "project_members"
 
-    project_id: Mapped[uuid4] = mapped_column(
+    project_id: Mapped[PyUUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), primary_key=True
     )
-    user_id: Mapped[uuid4] = mapped_column(
+    user_id: Mapped[PyUUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
     role: Mapped[str] = mapped_column(String(20))

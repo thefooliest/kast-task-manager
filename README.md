@@ -6,7 +6,8 @@ As project owner you can manage all tasks of your project, also asign tasks to a
 As member you can manage your own tasks (created by you or assigned to you).
 Everyone in a project can see all the tasks.
 
-Kast is under construction. Today, kast is just a backend skeleton with a postgres database in a docker container.
+Kast is under construction. Today, kast has its API rest working, you can generate some mock users, tasks and project and start testing how works all available endpoints running instructions below.
+
 ## How to run it?
 ### Backend Setup
 
@@ -65,6 +66,11 @@ source .venv/bin/activate
 uv pip install -e ".[dev]"
 # Start database
 docker compose up -d db
+# Run alembic migrations
+alembic revision --autogenerate -m "initial schema"
+alembic upgrade head
+# Run script to generate demo entities
+python -m src.scripts.seed
 # Run the API
 uvicorn src.main:app --reload
 ```
