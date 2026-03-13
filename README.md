@@ -1,4 +1,4 @@
-# kast - Task Manager
+# Kast - Task Manager
 
 **Kast** is a simple task manager that allows you to collaborate with a small teams in projects.
 Task are created within a project, so you need to create a project or join an existing one to create tasks. 
@@ -6,7 +6,7 @@ As project owner you can manage all tasks of your project, also asign tasks to a
 As member you can manage your own tasks (created by you or assigned to you).
 Everyone in a project can see all the tasks.
 
-Kast is under construction. Today, kast has its API rest working, you can generate some mock users, tasks and project and start testing how works all available endpoints running instructions below.
+Kast is under construction. Today, Kast has its API rest working, you can generate some mock users, tasks and project and start testing how all available endpoints work by running instructions below.
 
 ## How to run it?
 ### Backend Setup
