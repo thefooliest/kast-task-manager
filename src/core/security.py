@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import UUID
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -16,7 +17,7 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: UUID) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.app_access_token_expire_minutes
     )
@@ -24,13 +25,13 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(payload, settings.app_secret_key, algorithm=settings.app_jwt_algorithm)
 
 
-def decode_access_token(token: str) -> int | None:
-    """Returns user_id if token is valid, None otherwise."""
+def decode_access_token(token: str) -> UUID | None:
+    """Returns user_id as UUID if token is valid, None otherwise."""
     try:
         payload = jwt.decode(
             token, settings.app_secret_key, algorithms=[settings.app_jwt_algorithm]
         )
         user_id = payload.get("sub")
-        return int(user_id) if user_id is not None else None
+        return UUID(user_id) if user_id is not None else None
     except (JWTError, ValueError):
         return None
