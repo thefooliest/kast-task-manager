@@ -13,19 +13,18 @@ Kast is under construction. Today, kast is just a backend skeleton with a postgr
 **Environment Variables:** 
 You will need to write a .env file with the following variables:
 
-POSTGRES_USER=taskmanager
-POSTGRES_PASSWORD=taskmanager
-POSTGRES_DB=taskmanager
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5433
-APP_SECRET_KEY=dev-secret-key-change-in-production
-APP_JWT_ALGORITHM=HS256
-APP_ACCESS_TOKEN_EXPIRE_MINUTES=60
+POSTGRES_USER=taskmanager  
+POSTGRES_PASSWORD=taskmanager  
+POSTGRES_DB=taskmanager  
+POSTGRES_HOST=localhost  
+POSTGRES_PORT=5433  
+APP_SECRET_KEY=dev-secret-key-change-in-production  
+APP_JWT_ALGORITHM=HS256  
+APP_ACCESS_TOKEN_EXPIRE_MINUTES=60  
 
 These values are just examples. Please, change these values in production.
 
-```bash
-```
+
 Make sure you have uv astral installed
 ```bash
 uv --version
