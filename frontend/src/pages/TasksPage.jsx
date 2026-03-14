@@ -168,6 +168,7 @@ export default function TasksPage() {
               onUpdate={handleUpdate}
               onDelete={handleDelete}
               members={members}
+              projectId={projectId}
             />
           ))}
         </div>

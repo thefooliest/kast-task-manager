@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import CommentSection from './CommentSection';
 import TaskForm from './TaskForm';
 import styles from '../styles/TaskItem.module.css';
 
@@ -14,7 +15,7 @@ const PRIORITY_LABELS = {
   high: 'High',
 };
 
-export default function TaskItem({ task, onUpdate, onDelete, members = [] }) {
+export default function TaskItem({ task, onUpdate, onDelete, members = [], projectId }) {
   const [editing, setEditing] = useState(false);
 
   const handleStatusToggle = () => {
@@ -45,40 +46,46 @@ export default function TaskItem({ task, onUpdate, onDelete, members = [] }) {
   }
 
   return (
-    <div className={`${styles.item} ${task.status === 'done' ? styles.done : ''}`}>
-      <button
-        className={`${styles.checkbox} ${styles[task.status]}`}
-        onClick={handleStatusToggle}
-        title={`Status: ${STATUS_LABELS[task.status]}`}
-      >
-        {task.status === 'done' && '✓'}
-        {task.status === 'in_progress' && '•'}
-      </button>
+    <div className={`${styles.wrapper} ${task.status === 'done' ? styles.done : ''}`}>
+      <div className={styles.row}>
+        <button
+          className={`${styles.checkbox} ${styles[task.status]}`}
+          onClick={handleStatusToggle}
+          title={`Status: ${STATUS_LABELS[task.status]}`}
+        >
+          {task.status === 'done' && '✓'}
+          {task.status === 'in_progress' && '•'}
+        </button>
 
-      <div className={styles.content}>
-        <span className={styles.title}>{task.title}</span>
-        {task.description && (
-          <span className={styles.description}>{task.description}</span>
+        <div className={styles.content}>
+          <span className={styles.title}>{task.title}</span>
+          {task.description && (
+            <span className={styles.description}>{task.description}</span>
+          )}
+        </div>
+
+        {assignee && (
+          <span className={styles.assignee} title={assignee.email}>
+            {assignee.full_name}
+          </span>
         )}
+
+        <span className={`${styles.priority} ${styles[`priority_${task.priority}`]}`}>
+          {PRIORITY_LABELS[task.priority]}
+        </span>
+
+        <div className={styles.actions}>
+          <button className="btn btn-ghost" onClick={() => setEditing(true)}>
+            Edit
+          </button>
+          <button className="btn btn-danger" onClick={() => onDelete(task.id)}>
+            Delete
+          </button>
+        </div>
       </div>
 
-      {assignee && (
-        <span className={styles.assignee} title={assignee.email}>
-          {assignee.full_name}
-        </span>
-      )}
-
-      <span className={`${styles.priority} ${styles[`priority_${task.priority}`]}`}>
-        {PRIORITY_LABELS[task.priority]}
-      </span>
-
-      <div className={styles.actions}>
-        <button className="btn btn-ghost" onClick={() => setEditing(true)}>
-          Edit
-        </button>
-        <button className="btn btn-danger" onClick={() => onDelete(task.id)}>
-          Delete
-        </button>
+      <div className={styles.commentArea}>
+        <CommentSection projectId={projectId} taskId={task.id} />
       </div>
     </div>
   );

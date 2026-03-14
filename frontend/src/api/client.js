@@ -117,6 +117,24 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Comments
+  async getComments(projectId, taskId) {
+    return this.request(`/projects/${projectId}/tasks/${taskId}/comments`);
+  }
+
+  async createComment(projectId, taskId, content) {
+    return this.request(`/projects/${projectId}/tasks/${taskId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    });
+  }
+
+  async deleteComment(projectId, taskId, commentId) {
+    return this.request(`/projects/${projectId}/tasks/${taskId}/comments/${commentId}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const api = new ApiClient();
