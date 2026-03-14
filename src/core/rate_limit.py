@@ -39,4 +39,4 @@ class RateLimiter:
 
 
 # Login: max 10 attempts per minute
-login_limiter = RateLimiter(max_requests=10, window_seconds=60)
+login_limiter = RateLimiter(max_requests=30, window_seconds=60)

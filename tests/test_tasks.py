@@ -5,7 +5,7 @@ from src.domain.enums import ProjectRole
 from src.models.project_member import ProjectMemberModel
 
 
-
+@pytest.mark.asyncio
 async def test_create_task(client: AsyncClient, auth_headers, test_project):
     response = await client.post(
         f"/api/projects/{test_project.id}/tasks",
@@ -19,7 +19,7 @@ async def test_create_task(client: AsyncClient, auth_headers, test_project):
     assert data["priority"] == "high"
 
 
-
+@pytest.mark.asyncio
 async def test_list_tasks(client: AsyncClient, auth_headers, test_project):
     # Create a task first
     await client.post(
@@ -32,10 +32,12 @@ async def test_list_tasks(client: AsyncClient, auth_headers, test_project):
         headers=auth_headers,
     )
     assert response.status_code == 200
-    assert len(response.json()) >= 1
+    data = response.json()
+    assert data["total"] >= 1
+    assert len(data["tasks"]) >= 1
 
 
-
+@pytest.mark.asyncio
 async def test_list_tasks_filter_by_status(
     client: AsyncClient, auth_headers, test_project
 ):
@@ -63,11 +65,11 @@ async def test_list_tasks_filter_by_status(
         headers=auth_headers,
     )
     assert response.status_code == 200
-    tasks = response.json()
+    tasks = response.json()["tasks"]
     assert all(t["status"] == "done" for t in tasks)
 
 
-
+@pytest.mark.asyncio
 async def test_get_task(client: AsyncClient, auth_headers, test_project):
     create_resp = await client.post(
         f"/api/projects/{test_project.id}/tasks",
@@ -84,7 +86,7 @@ async def test_get_task(client: AsyncClient, auth_headers, test_project):
     assert response.json()["title"] == "Get Me"
 
 
-
+@pytest.mark.asyncio
 async def test_update_task(client: AsyncClient, auth_headers, test_project):
     create_resp = await client.post(
         f"/api/projects/{test_project.id}/tasks",
@@ -104,7 +106,7 @@ async def test_update_task(client: AsyncClient, auth_headers, test_project):
     assert data["status"] == "in_progress"
 
 
-
+@pytest.mark.asyncio
 async def test_delete_task(client: AsyncClient, auth_headers, test_project):
     create_resp = await client.post(
         f"/api/projects/{test_project.id}/tasks",
@@ -127,7 +129,7 @@ async def test_delete_task(client: AsyncClient, auth_headers, test_project):
     assert get_resp.status_code == 404
 
 
-
+@pytest.mark.asyncio
 async def test_member_can_see_all_tasks(
     client: AsyncClient,
     auth_headers,
@@ -159,10 +161,10 @@ async def test_member_can_see_all_tasks(
         headers=second_auth_headers,
     )
     assert response.status_code == 200
-    assert any(t["title"] == "Owner Task" for t in response.json())
+    assert any(t["title"] == "Owner Task" for t in response.json()["tasks"])
 
 
-
+@pytest.mark.asyncio
 async def test_member_cannot_modify_others_task(
     client: AsyncClient,
     auth_headers,
@@ -198,7 +200,7 @@ async def test_member_cannot_modify_others_task(
     assert response.status_code == 403
 
 
-
+@pytest.mark.asyncio
 async def test_owner_can_modify_any_task(
     client: AsyncClient,
     auth_headers,
@@ -235,7 +237,7 @@ async def test_owner_can_modify_any_task(
     assert response.json()["status"] == "done"
 
 
-
+@pytest.mark.asyncio
 async def test_non_member_cannot_access_tasks(
     client: AsyncClient, second_auth_headers, test_project
 ):
