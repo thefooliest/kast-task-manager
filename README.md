@@ -1,85 +1,80 @@
-# Kast - Task Manager
+# Kast
 
-**Kast** is a simple task manager that allows you to collaborate with a small teams in projects.
-Task are created within a project, so you need to create a project or join an existing one to create tasks. 
-As project owner you can manage all tasks of your project, also asign tasks to a member.
-As member you can manage your own tasks (created by you or assigned to you).
-Everyone in a project can see all the tasks.
+**Kast** is a simple task manager designed for small teams to collaborate on projects efficiently.
 
-Kast is under construction. Today, Kast has its API rest working, you can generate some mock users, tasks and project and start testing how all available endpoints work by running instructions below.
+Tasks are organized within projects. To start creating tasks, you'll need to either create a new project or join an existing one.
 
-## How to run it?
-### Backend Setup
+## Permissions
 
-**Environment Variables:** 
-You will need to write a .env file with the following variables:
+- **Project Owners** have full control over all tasks within their project and can assign tasks to team members.
+- **Team Members** can manage tasks they've created or those assigned to them.
+- All project participants can view every task within the project.
 
-POSTGRES_USER=taskmanager  
-POSTGRES_PASSWORD=taskmanager  
-POSTGRES_DB=taskmanager  
-POSTGRES_HOST=localhost  
-POSTGRES_PORT=5433  
-APP_SECRET_KEY=dev-secret-key-change-in-production  
-APP_JWT_ALGORITHM=HS256  
-APP_ACCESS_TOKEN_EXPIRE_MINUTES=60  
+## Current Status
 
-These values are just examples. Please, change these values in production.
+🚧 **Kast is under active development**
 
+The REST API and frontend are functional. You can run the application locally, log in, and perform CRUD operations on tasks and projects through the React interface.
 
-Make sure you have uv astral installed
-```bash
-uv --version
-```
-If not installed, you can install it with pip:
-```bash
-pip install uv # with pip
-```
-If you prefer your OS package manager:
+Follow the instructions below to test it out.
 
-**For linux**
-```bash
-sudo snap install astral-uv --classic # with snap
-```
- 
-**For macOS**
-```bash
-brew install uv # homebrew
-```
+## How to Run
 
-**For Windows**
-```bash
-winget install --id=astral-sh.uv  -e # WinGet
-```
-or:
-```bash
-scoop install main/uv # Scoop
-```
+### Prerequisites
 
-Then:
+- Python 3.13+
+- Node.js 18+
+- Docker and Docker Compose
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
+
+### Setup
 
 ```bash
-# Create a virtual environment
-uv venv
-# Activate virtual environment
-source .venv/bin/activate
-# Install dependencies
-uv pip install -e ".[dev]"
-# Start database
+# 1. Clone and enter the project
+git clone <repo-url>
+cd task-manager
+
+# 2. Create .env from the example
+cp .env.example .env
+
+# 3. Start PostgreSQL
 docker compose up -d db
-# Run alembic migrations
-alembic revision --autogenerate -m "initial schema"
+
+# 4. Install backend dependencies
+uv pip install -e ".[dev]"
+
+# 5. Run database migrations
 alembic upgrade head
-# Run script to generate demo entities
+
+# 6. Seed the database with demo data
 python -m src.scripts.seed
-# Run the API
+
+# 7. Start the API (terminal 1)
 uvicorn src.main:app --reload
+
+# 8. Install and start the frontend (terminal 2)
+cd frontend
+npm install
+npm run dev
 ```
-### For tests:
-create db for tests
+
+The API runs at `http://localhost:8000` (docs at `/api/docs`).
+The frontend runs at `http://localhost:5173`.
+
+### Demo Credentials
+
+| User  | Email                    | Password  | Role   |
+|-------|--------------------------|-----------|--------|
+| Admin | admin@taskmanager.com    | admin123  | Owner  |
+| Alice | alice@taskmanager.com    | alice123  | Member |
+| Bob   | bob@taskmanager.com      | bob123    | Member |
+
+### Running Tests
+
 ```bash
+# Create the test database (first time only)
 docker compose exec db psql -U taskmanager -c "CREATE DATABASE taskmanager_test;"
-```
-then run:
-```bash
+
+# Run tests
 pytest -v
 ```
