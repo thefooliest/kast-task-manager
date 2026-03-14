@@ -42,7 +42,7 @@ async def db_session():
     # Truncate after each test
     async with engine_test.begin() as conn:
         await conn.execute(
-            text("TRUNCATE TABLE tasks, project_members, projects, users CASCADE")
+            text("TRUNCATE TABLE comments, tasks, project_members, projects, users CASCADE")
         )
 
 
