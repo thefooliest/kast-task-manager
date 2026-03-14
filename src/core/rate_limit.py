@@ -38,5 +38,5 @@ class RateLimiter:
         self._requests[ip].append(now)
 
 
-# Login: max 10 attempts per minute
-login_limiter = RateLimiter(max_requests=35, window_seconds=60)
+# Login: max 50 attempts per minute
+login_limiter = RateLimiter(max_requests=50, window_seconds=60)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import ActivityFeed from '../components/ActivityFeed';
 import MemberList from '../components/MemberList';
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
@@ -129,6 +130,8 @@ export default function TasksPage() {
       {error && <div className={styles.error}>{error}</div>}
 
       <MemberList projectId={projectId} isOwner={isOwner} onMembersLoaded={setMembers} />
+
+      <ActivityFeed projectId={projectId} />
 
       {showForm && (
         <div className={styles.formWrapper}>

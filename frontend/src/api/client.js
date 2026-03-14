@@ -135,6 +135,11 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Activity
+  async getActivity(projectId, limit = 30) {
+    return this.request(`/projects/${projectId}/activity?limit=${limit}`);
+  }
 }
 
 export const api = new ApiClient();
