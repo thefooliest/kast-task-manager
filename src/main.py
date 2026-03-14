@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from src.controllers import auth_controller, project_controller, task_controller
-from src.services.task_service import NotFoundError, PermissionDeniedError
+from src.services.task_service import NotFoundError, PermissionDeniedError, ValidationError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,6 +50,11 @@ async def not_found_handler(request: Request, exc: NotFoundError):
 @app.exception_handler(PermissionDeniedError)
 async def permission_denied_handler(request: Request, exc: PermissionDeniedError):
     return JSONResponse(status_code=403, content={"detail": str(exc)})
+
+
+@app.exception_handler(ValidationError)
+async def validation_error_handler(request: Request, exc: ValidationError):
+    return JSONResponse(status_code=422, content={"detail": str(exc)})
 
 
 @app.get("/api/health")

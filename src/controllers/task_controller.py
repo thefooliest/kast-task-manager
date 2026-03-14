@@ -8,6 +8,7 @@ from src.core.dependencies import get_project_member
 from src.domain.enums import TaskStatus
 from src.domain.project import ProjectMember
 from src.domain.task import Task
+from src.repositories.project_repository import ProjectRepository
 from src.repositories.task_repository import TaskRepository
 from src.schemas.task import TaskCreate, TaskUpdate
 from src.services.task_service import TaskService
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/api/projects/{project_id}/tasks", tags=["tasks"])
 
 
 def _build_service(session: AsyncSession) -> TaskService:
-    return TaskService(TaskRepository(session))
+    return TaskService(TaskRepository(session), ProjectRepository(session))
 
 
 @router.get("")
@@ -25,9 +26,14 @@ async def list_tasks(
     member: ProjectMember = Depends(get_project_member),
     session: AsyncSession = Depends(get_db),
     status_filter: TaskStatus | None = Query(None, alias="status"),
-) -> list[Task]:
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
     service = _build_service(session)
-    return await service.get_tasks(project_id, member, status=status_filter)
+    tasks, total = await service.get_tasks(
+        project_id, member, status=status_filter, limit=limit, offset=offset
+    )
+    return {"tasks": tasks, "total": total, "limit": limit, "offset": offset}
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
