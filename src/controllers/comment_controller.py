@@ -7,9 +7,11 @@ from src.core.database import get_db
 from src.core.dependencies import get_project_member
 from src.domain.comment import Comment, CommentDetail
 from src.domain.project import ProjectMember
+from src.repositories.activity_repository import ActivityRepository
 from src.repositories.comment_repository import CommentRepository
 from src.repositories.task_repository import TaskRepository
 from src.schemas.comment import CommentCreate
+from src.services.activity_service import ActivityService
 from src.services.comment_service import CommentService
 
 router = APIRouter(
@@ -19,8 +21,8 @@ router = APIRouter(
 
 
 def _build_service(session: AsyncSession) -> CommentService:
-    return CommentService(CommentRepository(session), TaskRepository(session))
-
+    activity = ActivityService(ActivityRepository(session))
+    return CommentService(CommentRepository(session), TaskRepository(session), activity_service=activity)
 
 @router.get("")
 async def list_comments(

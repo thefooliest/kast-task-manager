@@ -167,21 +167,16 @@ For this project, `localStorage` is the pragmatic choice: React's built-in XSS p
 
 ### Backend
 - **Token storage** — Currently JWTs are stateless. Adding a `tokens` table to track issued tokens would enable proper token revocation on logout and mass invalidation if the secret key is compromised. This is important for incident response — without it, a leaked secret key means all tokens are valid until they expire.
-- **Task assignment validation** — Currently accepts any UUID for `assigned_to`. Should verify the user is a project member.
-- **Pagination** — Task listing returns all tasks. Should add cursor-based pagination for large projects.
 - **Registration endpoint** — Currently relies on seeded users. Adding registration with email validation would be a natural next step.
 - **Refresh tokens** — Current JWT setup uses only access tokens. A refresh token flow would improve security and UX.
-- **Rate limiting** — No rate limiting on the login endpoint. Should add to prevent brute force attacks.
 - **Activity log** — Track who created/updated/deleted tasks and when.
-- **Task comments** — Allow discussion on individual tasks.
 
 ### Frontend
 - **Responsive design** — The layout works on desktop but could be improved for mobile screens.
 - **Optimistic updates** — Currently reloads the full task list after each mutation. Optimistic UI would feel snappier.
-- **Member management UI** — The backend supports adding members to projects, but the frontend doesn't expose this yet.
-- **Task assignment UI** — The backend supports task assignment, but the frontend doesn't have a user picker.
 - **Better error handling** — More specific error messages and toast notifications instead of inline error banners.
 - **Loading skeletons** — Replace "Loading..." text with skeleton placeholders.
+- **Content Security Policy** — Add a strict CSP header to prevent inline script injection. Currently not needed since React handles rendering safely, but it's a defense-in-depth measure.
 - **Dependency auditing** — Add `npm audit` to the development workflow and pin dependency versions in `package-lock.json`.
 
 ### Infrastructure

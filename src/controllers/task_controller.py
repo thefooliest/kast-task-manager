@@ -8,17 +8,19 @@ from src.core.dependencies import get_project_member
 from src.domain.enums import TaskStatus
 from src.domain.project import ProjectMember
 from src.domain.task import Task
+from src.repositories.activity_repository import ActivityRepository
 from src.repositories.project_repository import ProjectRepository
 from src.repositories.task_repository import TaskRepository
 from src.schemas.task import TaskCreate, TaskUpdate
+from src.services.activity_service import ActivityService
 from src.services.task_service import TaskService
 
 router = APIRouter(prefix="/api/projects/{project_id}/tasks", tags=["tasks"])
 
 
 def _build_service(session: AsyncSession) -> TaskService:
-    return TaskService(TaskRepository(session), ProjectRepository(session))
-
+    activity = ActivityService(ActivityRepository(session))
+    return TaskService(TaskRepository(session), ProjectRepository(session), activity_service=activity)
 
 @router.get("")
 async def list_tasks(

@@ -7,16 +7,19 @@ from src.core.database import get_db
 from src.core.dependencies import get_current_user, get_project_member
 from src.domain.project import MemberDetail, Project, ProjectMember
 from src.domain.user import User
+from src.repositories.activity_repository import ActivityRepository
 from src.repositories.project_repository import ProjectRepository
 from src.repositories.user_repository import UserRepository
 from src.schemas.project import AddMemberRequest, ProjectCreate
+from src.services.activity_service import ActivityService
 from src.services.project_service import ProjectService
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
 
 def _build_service(session: AsyncSession) -> ProjectService:
-    return ProjectService(ProjectRepository(session))
+    activity = ActivityService(ActivityRepository(session))
+    return ProjectService(ProjectRepository(session), activity_service=activity)
 
 
 @router.get("")
@@ -98,4 +101,4 @@ async def add_member(
             detail="User is already a member of this project",
         )
 
-    return await service.add_member(project_id, user.id)
+    return await service.add_member(project_id, user.id, added_by=member.user_id)

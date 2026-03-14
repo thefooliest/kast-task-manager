@@ -4,7 +4,12 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.controllers import auth_controller, comment_controller, project_controller, task_controller
+from src.controllers import (auth_controller, 
+                             comment_controller, 
+                             project_controller, 
+                             task_controller,
+                             activity_controller)
+
 from src.services.task_service import NotFoundError, PermissionDeniedError, ValidationError
 
 logging.basicConfig(level=logging.INFO)
@@ -40,6 +45,7 @@ app.include_router(auth_controller.router)
 app.include_router(project_controller.router)
 app.include_router(task_controller.router)
 app.include_router(comment_controller.router)
+app.include_router(activity_controller.router)
 
 
 # Global exception handlers — map service exceptions to HTTP status codes
