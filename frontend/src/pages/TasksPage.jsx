@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import MemberList from '../components/MemberList';
 import TaskForm from '../components/TaskForm';
 import TaskItem from '../components/TaskItem';
+import { useAuth } from '../context/AuthContext';
 import styles from '../styles/TasksPage.module.css';
 
 const STATUS_FILTERS = [
@@ -12,21 +14,29 @@ const STATUS_FILTERS = [
   { value: 'done', label: 'Done' },
 ];
 
+const TASKS_PER_PAGE = 20;
+
 export default function TasksPage() {
   const { projectId } = useParams();
+  const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
+
+  const isOwner = project && user && project.owner_id === user.id;
 
   useEffect(() => {
     loadProject();
   }, [projectId]);
 
   useEffect(() => {
-    loadTasks();
+    setOffset(0);
+    loadTasks(0);
   }, [projectId, statusFilter]);
 
   const loadProject = async () => {
@@ -38,10 +48,12 @@ export default function TasksPage() {
     }
   };
 
-  const loadTasks = async () => {
+  const loadTasks = async (newOffset = offset) => {
     try {
-      const data = await api.getTasks(projectId, statusFilter);
-      setTasks(data);
+      const data = await api.getTasks(projectId, statusFilter, TASKS_PER_PAGE, newOffset);
+      setTasks(data.tasks);
+      setTotal(data.total);
+      setOffset(newOffset);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,7 +65,7 @@ export default function TasksPage() {
     try {
       await api.createTask(projectId, data);
       setShowForm(false);
-      loadTasks();
+      loadTasks(0);
     } catch (err) {
       setError(err.message);
     }
@@ -76,6 +88,11 @@ export default function TasksPage() {
       setError(err.message);
     }
   };
+
+  const hasMore = offset + TASKS_PER_PAGE < total;
+  const hasPrev = offset > 0;
+  const currentPage = Math.floor(offset / TASKS_PER_PAGE) + 1;
+  const totalPages = Math.ceil(total / TASKS_PER_PAGE);
 
   if (loading) {
     return <div className={styles.loading}>Loading tasks...</div>;
@@ -100,6 +117,8 @@ export default function TasksPage() {
 
       {error && <div className={styles.error}>{error}</div>}
 
+      <MemberList projectId={projectId} isOwner={isOwner} />
+
       {showForm && (
         <div className={styles.formWrapper}>
           <TaskForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
@@ -117,7 +136,7 @@ export default function TasksPage() {
           </button>
         ))}
         <span className={styles.count}>
-          {tasks.length} task{tasks.length !== 1 ? 's' : ''}
+          {total} task{total !== 1 ? 's' : ''}
         </span>
       </div>
 
@@ -139,6 +158,28 @@ export default function TasksPage() {
               onDelete={handleDelete}
             />
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => loadTasks(offset - TASKS_PER_PAGE)}
+            disabled={!hasPrev}
+          >
+            ← Previous
+          </button>
+          <span className={styles.pageInfo}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="btn btn-secondary"
+            onClick={() => loadTasks(offset + TASKS_PER_PAGE)}
+            disabled={!hasMore}
+          >
+            Next →
+          </button>
         </div>
       )}
     </div>

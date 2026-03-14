@@ -90,9 +90,12 @@ class ApiClient {
   }
 
   // Tasks
-  async getTasks(projectId, status = null) {
-    const params = status ? `?status=${status}` : '';
-    return this.request(`/projects/${projectId}/tasks${params}`);
+  async getTasks(projectId, status = null, limit = 50, offset = 0) {
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    params.set('limit', limit);
+    params.set('offset', offset);
+    return this.request(`/projects/${projectId}/tasks?${params.toString()}`);
   }
 
   async createTask(projectId, task) {
