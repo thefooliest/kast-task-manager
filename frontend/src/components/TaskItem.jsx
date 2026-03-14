@@ -14,7 +14,7 @@ const PRIORITY_LABELS = {
   high: 'High',
 };
 
-export default function TaskItem({ task, onUpdate, onDelete }) {
+export default function TaskItem({ task, onUpdate, onDelete, members = [] }) {
   const [editing, setEditing] = useState(false);
 
   const handleStatusToggle = () => {
@@ -29,12 +29,17 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
     setEditing(false);
   };
 
+  const assignee = task.assigned_to
+    ? members.find((m) => m.user_id === task.assigned_to)
+    : null;
+
   if (editing) {
     return (
       <TaskForm
         initial={task}
         onSubmit={handleUpdate}
         onCancel={() => setEditing(false)}
+        members={members}
       />
     );
   }
@@ -56,6 +61,12 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
           <span className={styles.description}>{task.description}</span>
         )}
       </div>
+
+      {assignee && (
+        <span className={styles.assignee} title={assignee.email}>
+          {assignee.full_name}
+        </span>
+      )}
 
       <span className={`${styles.priority} ${styles[`priority_${task.priority}`]}`}>
         {PRIORITY_LABELS[task.priority]}

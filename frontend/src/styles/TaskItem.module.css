@@ -74,6 +74,19 @@
   text-overflow: ellipsis;
 }
 
+.assignee {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-hover);
+  padding: 0.1875rem 0.625rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .priority {
   font-size: 0.6875rem;
   font-weight: 600;

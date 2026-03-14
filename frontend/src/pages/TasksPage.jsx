@@ -20,6 +20,7 @@ export default function TasksPage() {
   const { projectId } = useParams();
   const { user } = useAuth();
   const [project, setProject] = useState(null);
+  const [members, setMembers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -32,6 +33,7 @@ export default function TasksPage() {
 
   useEffect(() => {
     loadProject();
+    loadMembers();
   }, [projectId]);
 
   useEffect(() => {
@@ -45,6 +47,15 @@ export default function TasksPage() {
       setProject(data);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const loadMembers = async () => {
+    try {
+      const data = await api.getProjectMembers(projectId);
+      setMembers(data);
+    } catch (err) {
+      // Non-critical — form still works without member list
     }
   };
 
@@ -117,11 +128,11 @@ export default function TasksPage() {
 
       {error && <div className={styles.error}>{error}</div>}
 
-      <MemberList projectId={projectId} isOwner={isOwner} />
+      <MemberList projectId={projectId} isOwner={isOwner} onMembersLoaded={setMembers} />
 
       {showForm && (
         <div className={styles.formWrapper}>
-          <TaskForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
+          <TaskForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} members={members} />
         </div>
       )}
 
@@ -156,6 +167,7 @@ export default function TasksPage() {
               task={task}
               onUpdate={handleUpdate}
               onDelete={handleDelete}
+              members={members}
             />
           ))}
         </div>

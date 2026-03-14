@@ -1,15 +1,21 @@
 import { useState } from 'react';
 import styles from '../styles/TaskForm.module.css';
 
-export default function TaskForm({ onSubmit, onCancel, initial = null }) {
+export default function TaskForm({ onSubmit, onCancel, initial = null, members = [] }) {
   const [title, setTitle] = useState(initial?.title || '');
   const [description, setDescription] = useState(initial?.description || '');
   const [priority, setPriority] = useState(initial?.priority || 'medium');
   const [status, setStatus] = useState(initial?.status || 'todo');
+  const [assignedTo, setAssignedTo] = useState(initial?.assigned_to || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = { title, description: description || null, priority };
+    const data = {
+      title,
+      description: description || null,
+      priority,
+      assigned_to: assignedTo || null,
+    };
     if (initial) {
       data.status = status;
     }
@@ -51,6 +57,17 @@ export default function TaskForm({ onSubmit, onCancel, initial = null }) {
             </select>
           </div>
         )}
+        <div className={styles.field}>
+          <label>Assign to</label>
+          <select value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)}>
+            <option value="">Unassigned</option>
+            {members.map((m) => (
+              <option key={m.user_id} value={m.user_id}>
+                {m.full_name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className={styles.actions}>
         <button type="button" className="btn btn-ghost" onClick={onCancel}>
