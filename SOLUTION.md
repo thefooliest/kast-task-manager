@@ -127,6 +127,26 @@ All entities use UUIDs instead of sequential integers. UUIDs are safer to expose
 
 The async engine is configured with explicit pool settings (`pool_size=10`, `max_overflow=20`, `pool_pre_ping=True`, `pool_recycle=300`) rather than relying on defaults. `pool_pre_ping` detects stale connections after database restarts, and `pool_recycle` prevents long-lived connections from going stale.
 
+### Security Measures
+
+**Current protections:**
+
+- **Authentication** — JWT-based with bcrypt password hashing. Tokens are validated on every protected request via a FastAPI dependency.
+- **CORS** — Restricted to the frontend origin (`localhost:5173`). Not open to `*`.
+- **Security headers** — The API sets `X-Frame-Options: DENY` (prevents clickjacking), `X-Content-Type-Options: nosniff` (prevents MIME sniffing), `X-XSS-Protection: 1; mode=block`, and `Referrer-Policy: strict-origin-when-cross-origin`.
+- **XSS** — React escapes all rendered content by default. The frontend never uses `dangerouslySetInnerHTML`.
+- **CSRF** — Not a concern because authentication uses the `Authorization` header with Bearer tokens, not cookies. CSRF attacks exploit automatic cookie inclusion, which doesn't apply here.
+- **SQL injection** — SQLAlchemy's parameterized queries prevent injection. No raw SQL with string interpolation.
+- **Input validation** — Pydantic schemas validate all request bodies. Invalid data is rejected before reaching business logic.
+
+**Token storage trade-off:**
+
+JWT tokens are stored in `localStorage`. This is the standard approach for SPA + API architectures, but it comes with a known trade-off: if an XSS vulnerability exists, malicious JavaScript could read the token from `localStorage` and exfiltrate it. Once stolen, the token can be used from anywhere — CORS is a browser-only enforcement and doesn't protect against direct HTTP requests from outside the browser.
+
+The alternative is `httpOnly` cookies, which JavaScript cannot read — making token theft via XSS impossible. However, cookies introduce CSRF vulnerabilities and require additional backend complexity (`SameSite` configuration, CSRF tokens, cookie-based session management).
+
+For this project, `localStorage` is the pragmatic choice: React's built-in XSS protection (all rendered content is escaped, no use of `dangerouslySetInnerHTML`) makes the XSS vector unlikely, and the simpler auth flow keeps the codebase focused. In a higher-security context, migrating to `httpOnly` cookies with `SameSite=Strict` would be the next step.
+
 ---
 
 ## What I Prioritized
@@ -146,6 +166,7 @@ The async engine is configured with explicit pool settings (`pool_size=10`, `max
 ## What I Would Improve With More Time
 
 ### Backend
+- **Token storage** — Currently JWTs are stateless. Adding a `tokens` table to track issued tokens would enable proper token revocation on logout and mass invalidation if the secret key is compromised. This is important for incident response — without it, a leaked secret key means all tokens are valid until they expire.
 - **Task assignment validation** — Currently accepts any UUID for `assigned_to`. Should verify the user is a project member.
 - **Pagination** — Task listing returns all tasks. Should add cursor-based pagination for large projects.
 - **Registration endpoint** — Currently relies on seeded users. Adding registration with email validation would be a natural next step.
@@ -161,6 +182,7 @@ The async engine is configured with explicit pool settings (`pool_size=10`, `max
 - **Task assignment UI** — The backend supports task assignment, but the frontend doesn't have a user picker.
 - **Better error handling** — More specific error messages and toast notifications instead of inline error banners.
 - **Loading skeletons** — Replace "Loading..." text with skeleton placeholders.
+- **Dependency auditing** — Add `npm audit` to the development workflow and pin dependency versions in `package-lock.json`.
 
 ### Infrastructure
 - **CI/CD pipeline** — GitHub Actions for running tests and linting on push.
