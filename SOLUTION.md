@@ -169,7 +169,6 @@ For this project, `localStorage` is the pragmatic choice: React's built-in XSS p
 - **Token storage** — Currently JWTs are stateless. Adding a `tokens` table to track issued tokens would enable proper token revocation on logout and mass invalidation if the secret key is compromised. This is important for incident response — without it, a leaked secret key means all tokens are valid until they expire.
 - **Registration endpoint** — Currently relies on seeded users. Adding registration with email validation would be a natural next step.
 - **Refresh tokens** — Current JWT setup uses only access tokens. A refresh token flow would improve security and UX.
-- **Activity log** — Track who created/updated/deleted tasks and when.
 
 ### Frontend
 - **Responsive design** — The layout works on desktop but could be improved for mobile screens.
