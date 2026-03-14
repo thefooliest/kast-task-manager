@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import func, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import TaskPriority, TaskStatus
@@ -38,14 +38,26 @@ class TaskRepository:
         self,
         project_id: UUID,
         status: TaskStatus | None = None,
-    ) -> list[Task]:
-        query = select(TaskModel).where(TaskModel.project_id == project_id)
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[list[Task], int]:
+        """Returns (tasks, total_count) with pagination."""
+        base_query = select(TaskModel).where(TaskModel.project_id == project_id)
         if status is not None:
-            query = query.where(TaskModel.status == status.value)
-        query = query.order_by(TaskModel.created_at.desc())
+            base_query = base_query.where(TaskModel.status == status.value)
+
+        # Get total count
+        count_result = await self._session.execute(
+            select(func.count()).select_from(base_query.subquery())
+        )
+        total = count_result.scalar_one()
+
+        # Get paginated results
+        query = base_query.order_by(TaskModel.created_at.desc()).limit(limit).offset(offset)
 
         result = await self._session.execute(query)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        tasks = [self._to_domain(m) for m in result.scalars().all()]
+        return tasks, total
 
     async def create(
         self,
