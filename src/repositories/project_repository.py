@@ -4,9 +4,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.enums import ProjectRole
-from src.domain.project import Project, ProjectMember
+from src.domain.project import MemberDetail, Project, ProjectMember
 from src.models.project import ProjectModel
 from src.models.project_member import ProjectMemberModel
+from src.models.user import UserModel
 
 
 class ProjectRepository:
@@ -96,3 +97,20 @@ class ProjectRepository:
             )
         )
         return [self._member_to_domain(m) for m in result.scalars().all()]
+
+    async def get_members_with_details(self, project_id: UUID) -> list[MemberDetail]:
+        result = await self._session.execute(
+            select(ProjectMemberModel, UserModel)
+            .join(UserModel, UserModel.id == ProjectMemberModel.user_id)
+            .where(ProjectMemberModel.project_id == project_id)
+        )
+        return [
+            MemberDetail(
+                user_id=member.user_id,
+                email=user.email,
+                full_name=user.full_name,
+                role=ProjectRole(member.role),
+                joined_at=member.joined_at,
+            )
+            for member, user in result.all()
+        ]

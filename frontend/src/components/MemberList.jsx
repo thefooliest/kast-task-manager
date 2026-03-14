@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import styles from '../styles/MemberList.module.css';
 
-export default function MemberList({ projectId, isOwner }) {
+export default function MemberList({ projectId, isOwner, onMembersLoaded }) {
   const [members, setMembers] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [email, setEmail] = useState('');
@@ -75,7 +75,10 @@ export default function MemberList({ projectId, isOwner }) {
         {members.map((m) => (
           <div key={m.user_id} className={styles.member}>
             <span className={styles.dot} />
-            <span className={styles.userId}>{m.user_id.slice(0, 8)}...</span>
+            <div className={styles.memberInfo}>
+              <span className={styles.memberName}>{m.full_name}</span>
+              <span className={styles.memberEmail}>{m.email}</span>
+            </div>
             <span className={`${styles.role} ${styles[m.role]}`}>
               {m.role}
             </span>

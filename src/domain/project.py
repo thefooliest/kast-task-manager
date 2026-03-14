@@ -14,6 +14,16 @@ class ProjectMember:
 
 
 @dataclass
+class MemberDetail:
+    """ProjectMember enriched with user info — used for API responses."""
+    user_id: UUID
+    email: str
+    full_name: str
+    role: ProjectRole
+    joined_at: datetime
+
+
+@dataclass
 class Project:
     id: UUID
     name: str

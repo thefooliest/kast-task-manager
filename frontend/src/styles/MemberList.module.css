@@ -63,10 +63,22 @@
   flex-shrink: 0;
 }
 
-.userId {
-  color: var(--color-text-secondary);
-  font-family: monospace;
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  min-width: 0;
+}
+
+.memberName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.memberEmail {
   font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 .role {

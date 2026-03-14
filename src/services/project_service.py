@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from src.domain.enums import ProjectRole
-from src.domain.project import Project, ProjectMember
+from src.domain.project import MemberDetail, Project, ProjectMember
 from src.repositories.project_repository import ProjectRepository
 
 
@@ -37,3 +37,6 @@ class ProjectService:
 
     async def get_members(self, project_id: UUID) -> list[ProjectMember]:
         return await self._project_repo.get_members(project_id)
+
+    async def get_members_with_details(self, project_id: UUID) -> list[MemberDetail]:
+        return await self._project_repo.get_members_with_details(project_id)

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_db
 from src.core.dependencies import get_current_user, get_project_member
-from src.domain.project import Project, ProjectMember
+from src.domain.project import MemberDetail, Project, ProjectMember
 from src.domain.user import User
 from src.repositories.project_repository import ProjectRepository
 from src.repositories.user_repository import UserRepository
@@ -63,9 +63,9 @@ async def list_members(
     project_id: UUID,
     member: ProjectMember = Depends(get_project_member),
     session: AsyncSession = Depends(get_db),
-) -> list[ProjectMember]:
+) -> list[MemberDetail]:
     service = _build_service(session)
-    return await service.get_members(project_id)
+    return await service.get_members_with_details(project_id)
 
 
 @router.post("/{project_id}/members", status_code=status.HTTP_201_CREATED)
