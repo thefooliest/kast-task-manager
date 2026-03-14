@@ -74,3 +74,12 @@ python -m src.scripts.seed
 # Run the API
 uvicorn src.main:app --reload
 ```
+### For tests:
+create db for tests
+```bash
+docker compose exec db psql -U taskmanager -c "CREATE DATABASE taskmanager_test;"
+```
+then run:
+```bash
+pytest -v
+```
