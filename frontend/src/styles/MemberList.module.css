@@ -2,22 +2,50 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
 }
 
-.header {
+.toggle {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: none;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+}
+
+.toggle:hover {
+  background: var(--color-surface-hover);
+}
+
+.toggleIcon {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
 
 .title {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.preview {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.body {
+  padding: 0 1.25rem 1rem;
+}
+
+.addSection {
+  margin-bottom: 0.75rem;
 }
 
 .error {
@@ -32,7 +60,6 @@
 .addForm {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
 }
 
 .addForm input {

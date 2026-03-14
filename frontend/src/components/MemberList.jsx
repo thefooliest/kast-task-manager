@@ -4,6 +4,7 @@ import styles from '../styles/MemberList.module.css';
 
 export default function MemberList({ projectId, isOwner, onMembersLoaded }) {
   const [members, setMembers] = useState([]);
+  const [expanded, setExpanded] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -17,6 +18,7 @@ export default function MemberList({ projectId, isOwner, onMembersLoaded }) {
     try {
       const data = await api.getProjectMembers(projectId);
       setMembers(data);
+      onMembersLoaded?.(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -41,50 +43,62 @@ export default function MemberList({ projectId, isOwner, onMembersLoaded }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>Members ({members.length})</h3>
-        {isOwner && (
-          <button
-            className="btn btn-ghost"
-            onClick={() => setShowAdd(!showAdd)}
-          >
-            {showAdd ? 'Cancel' : '+ Add'}
-          </button>
+      <button
+        className={styles.toggle}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <span className={styles.toggleIcon}>{expanded ? '▾' : '▸'}</span>
+        <span className={styles.title}>Members ({members.length})</span>
+        {!expanded && (
+          <span className={styles.preview}>
+            {members.map((m) => m.full_name).join(', ')}
+          </span>
         )}
-      </div>
+      </button>
 
-      {error && <div className={styles.error}>{error}</div>}
-
-      {showAdd && (
-        <form onSubmit={handleAdd} className={styles.addForm}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="user@example.com"
-            required
-            autoFocus
-          />
-          <button type="submit" className="btn btn-primary">
-            Add
-          </button>
-        </form>
-      )}
-
-      <div className={styles.list}>
-        {members.map((m) => (
-          <div key={m.user_id} className={styles.member}>
-            <span className={styles.dot} />
-            <div className={styles.memberInfo}>
-              <span className={styles.memberName}>{m.full_name}</span>
-              <span className={styles.memberEmail}>{m.email}</span>
+      {expanded && (
+        <div className={styles.body}>
+          {isOwner && (
+            <div className={styles.addSection}>
+              {showAdd ? (
+                <form onSubmit={handleAdd} className={styles.addForm}>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    required
+                    autoFocus
+                  />
+                  <button type="submit" className="btn btn-primary">Add</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setShowAdd(false)}>Cancel</button>
+                </form>
+              ) : (
+                <button className="btn btn-ghost" onClick={() => setShowAdd(true)}>
+                  + Add member
+                </button>
+              )}
             </div>
-            <span className={`${styles.role} ${styles[m.role]}`}>
-              {m.role}
-            </span>
+          )}
+
+          {error && <div className={styles.error}>{error}</div>}
+
+          <div className={styles.list}>
+            {members.map((m) => (
+              <div key={m.user_id} className={styles.member}>
+                <span className={styles.dot} />
+                <div className={styles.memberInfo}>
+                  <span className={styles.memberName}>{m.full_name}</span>
+                  <span className={styles.memberEmail}>{m.email}</span>
+                </div>
+                <span className={`${styles.role} ${styles[m.role]}`}>
+                  {m.role}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
