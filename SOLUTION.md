@@ -205,6 +205,7 @@ For this project, `localStorage` is the pragmatic choice: React's built-in XSS p
 ### Backend
 - **Token storage** — Currently JWTs are stateless. Adding a `tokens` table to track issued tokens would enable proper token revocation on logout and mass invalidation if the secret key is compromised. This is important for incident response — without it, a leaked secret key means all tokens are valid until they expire.
 - **Registration endpoint** — Currently relies on seeded users. Adding registration with email validation would be a natural next step.
+- **Task dependencies** — Currently does not have a way to set task dependencies. This functionality would be useful for critical path analysis.
 - **Refresh tokens** — Current JWT setup uses only access tokens. A refresh token flow would improve security and UX.
 - **WebSocket notifications** — Currently the frontend polls for unread count every 30 seconds. WebSockets or Server-Sent Events would provide real-time push notifications without polling overhead.
 
@@ -213,6 +214,8 @@ For this project, `localStorage` is the pragmatic choice: React's built-in XSS p
 - **Better error handling** — More specific error messages and toast notifications instead of inline error banners.
 - **Loading skeletons** — Replace "Loading..." text with skeleton placeholders.
 - **Content Security Policy** — Add a strict CSP header to prevent inline script injection. Currently not needed since React handles rendering safely, but it's a defense-in-depth measure.
+- **Multiple Task Views** — Currently It's possible to see project tasks in one way: list. For project owner would be valuable to have Gantt view for managing due dates visually, and critical path view for setting priorities.
+- **More Options for Searching and filtering** currently its possible to filter by status only.
 - **Dependency auditing** — Add `npm audit` to the development workflow and pin dependency versions in `package-lock.json`.
 
 ### Infrastructure
