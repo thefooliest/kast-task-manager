@@ -1,12 +1,20 @@
 import { useState } from 'react';
 import styles from '../styles/TaskForm.module.css';
 
+function formatDateForInput(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  // Format as YYYY-MM-DD for input[type=date]
+  return date.toISOString().split('T')[0];
+}
+
 export default function TaskForm({ onSubmit, onCancel, initial = null, members = [] }) {
   const [title, setTitle] = useState(initial?.title || '');
   const [description, setDescription] = useState(initial?.description || '');
   const [priority, setPriority] = useState(initial?.priority || 'medium');
   const [status, setStatus] = useState(initial?.status || 'todo');
   const [assignedTo, setAssignedTo] = useState(initial?.assigned_to || '');
+  const [dueDate, setDueDate] = useState(formatDateForInput(initial?.due_date));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,6 +23,7 @@ export default function TaskForm({ onSubmit, onCancel, initial = null, members =
       description: description || null,
       priority,
       assigned_to: assignedTo || null,
+      due_date: dueDate ? new Date(dueDate + 'T23:59:59').toISOString() : null,
     };
     if (initial) {
       data.status = status;
@@ -67,6 +76,14 @@ export default function TaskForm({ onSubmit, onCancel, initial = null, members =
               </option>
             ))}
           </select>
+        </div>
+        <div className={styles.field}>
+          <label>Due date</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
         </div>
       </div>
       <div className={styles.actions}>

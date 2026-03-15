@@ -20,6 +20,7 @@ import src.models.project_member  # noqa: F401
 import src.models.task  # noqa: F401
 import src.models.comment # noqa: F401
 import src.models.activity # noqa: F401
+import src.models.notification # noqa: F401
 config = context.config
 
 # Override alembic.ini URL with the one built from .env

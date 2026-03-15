@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationBell from './NotificationBell';
 import styles from '../styles/Header.module.css';
 
 export default function Header() {
@@ -34,6 +35,7 @@ export default function Header() {
           )}
         </div>
         <div className={styles.right}>
+          <NotificationBell />
           <span className={styles.userName}>{user.fullName}</span>
           <button className="btn btn-ghost" onClick={handleLogout}>
             Log out

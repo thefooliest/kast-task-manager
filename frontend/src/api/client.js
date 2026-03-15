@@ -140,6 +140,26 @@ class ApiClient {
   async getActivity(projectId, limit = 30) {
     return this.request(`/projects/${projectId}/activity?limit=${limit}`);
   }
+
+  // Notifications
+  async getNotifications(unreadOnly = false, limit = 50) {
+    const params = new URLSearchParams();
+    if (unreadOnly) params.set('unread_only', 'true');
+    params.set('limit', limit);
+    return this.request(`/notifications?${params.toString()}`);
+  }
+
+  async getUnreadCount() {
+    return this.request('/notifications/unread-count');
+  }
+
+  async markNotificationRead(notificationId) {
+    return this.request(`/notifications/${notificationId}/read`, { method: 'PUT' });
+  }
+
+  async markAllNotificationsRead() {
+    return this.request('/notifications/read-all', { method: 'PUT' });
+  }
 }
 
 export const api = new ApiClient();

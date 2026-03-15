@@ -1,25 +1,42 @@
+import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.controllers import (auth_controller, 
-                             comment_controller, 
-                             project_controller, 
-                             task_controller,
-                             activity_controller)
-
+from src.controllers import (
+    activity_controller,
+    auth_controller,
+    comment_controller,
+    notification_controller,
+    project_controller,
+    task_controller,
+)
+from src.core.scheduler import overdue_checker_loop
 from src.services.task_service import NotFoundError, PermissionDeniedError, ValidationError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Start background scheduler on boot, cancel on shutdown."""
+    task = asyncio.create_task(overdue_checker_loop())
+    logger.info("Background scheduler started")
+    yield
+    task.cancel()
+    logger.info("Background scheduler stopped")
+
 
 app = FastAPI(
     title="Task Manager API",
     version="0.1.0",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -46,6 +63,7 @@ app.include_router(project_controller.router)
 app.include_router(task_controller.router)
 app.include_router(comment_controller.router)
 app.include_router(activity_controller.router)
+app.include_router(notification_controller.router)
 
 
 # Global exception handlers — map service exceptions to HTTP status codes

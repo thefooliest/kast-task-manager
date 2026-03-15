@@ -70,6 +70,19 @@ export default function TaskItem({ task, onUpdate, onDelete, members = [], proje
           </span>
         )}
 
+        {task.due_date && (
+          <span
+            className={`${styles.dueDate} ${
+              new Date(task.due_date) < new Date() && task.status !== 'done'
+                ? styles.overdue
+                : ''
+            }`}
+            title={new Date(task.due_date).toLocaleDateString()}
+          >
+            {new Date(task.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+          </span>
+        )}
+
         <span className={`${styles.priority} ${styles[`priority_${task.priority}`]}`}>
           {PRIORITY_LABELS[task.priority]}
         </span>
